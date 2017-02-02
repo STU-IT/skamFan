@@ -70,8 +70,23 @@ function prepareSeason(event, ui)
     )
 }
 
+prepareEpisodeDetails(event, ui)
+{
+    console.log("Indlæser sæson " + this.dataset.slug );
+
+    $.get('http://www.dr.dk/mu-online/api/1.3/list/view/season?id='+ this.dataset.slug +'&limit=15&offset=0',
+        function(res, code) {
+            console.debug(code + ': ' + res);
+        }
+    )
+}
+
+
 $(document).ready( // når siden er loaded
     function(){
+
+        $('#episodes a').one('click', prepareEpisodeDetails);
+
         var pageContainer = $("div#container").pagecontainer({
             beforeshow:
             function( event, ui){
