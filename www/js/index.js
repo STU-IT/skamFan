@@ -4,8 +4,11 @@ function prepareSeasons(event, ui)
 {
     console.log("ready to load Seasons");
 
-    $.get("http://www.dr.dk/mu-online/api/1.3/list/view/seasons?id=skam&onlyincludefirstepisode=true&limit=15&offset=0",
-        function(res, code) {
+    $.get
+    (
+        "http://www.dr.dk/mu-online/api/1.3/list/view/seasons?id=skam&onlyincludefirstepisode=true&limit=15&offset=0",
+        function(res, code)
+        {
             console.debug(code + ": " + JSON.stringify(res));
 
             // check lige om indholdes er bare lidt i orden...
@@ -37,71 +40,87 @@ function prepareSeason(event, ui)
 {
     console.log("Indlæser sæson " + this.dataset.slug );
 
-    $.get('http://www.dr.dk/mu-online/api/1.3/list/view/season?id='+ this.dataset.slug +'&limit=15&offset=0',
-        function(res, code){
+    $.get
+    (
+        'http://www.dr.dk/mu-online/api/1.3/list/view/season?id='+ this.dataset.slug +'&limit=15&offset=0',
+        function(res, code)
+        {
             console.debug(code + ": " + JSON.stringify(res));
 
             // check lige om indholdes er bare lidt i orden...
             if (res.Items && res.TotalSize > 0)
             {
+                $('#episodes div').remove();
                 // fjern 'gamle' div'er
                 //$('#season div').remove();
                 var newContent = '';
                 // gennemløb alle afsnit i Items
-                for (var i in res.Items) {
-                    // lav en ny "div" for hver sæson
-                    // <div>
-                    //     <a href="#episodeDetails">
-                    //         <img src="xxx">
-                    //         <h2>2 3-10</h2>
-                    //     <h2>Jonas kysser Eva, men Noora ser det hele</h2>
-                    //     </a>
-                    //     </div>
-                    newContent += '<div><a href="#episodeDetails">'
-                                + '<img src="xxx">'
-                                + '<h2>'+ res.Items[i].Title +'</h2>'
-                                + '<h2>Jonas kysser Eva, men Noora ser det hele</h2>'
-                                + '</a></div>';
+                for (var i in res.Items)
+                {
+
+                    newContent += '<div>'
+                                + '<img src="' + res.Items[i].PrimaryImageUri + '" width="50%">'
+                                + '<h2>' + res.Items[i].Title + '</h2>'
+                                + '<p>' + res.Items[i].Description + '</p>'
+                                + '<a href="#episodeDetails" data-role="butten">se mere</a>'
+                                + '</div>';
+
                 }
-
+                $(newContent).appendTo('#episodes');
+                // lad JQM forbedre htmlen
+                $('#episodes').enhanceWithin();
+                // tilføj event handler til hver knap
+                $('#episodes a').one('click', prepareEpisodeDetails());
             }
-
         }
     )
 }
 
-prepareEpisodeDetails(event, ui)
+
+
+ function prepareEpisodeDetails(event, ui)
 {
-    console.log("Indlæser sæson " + this.dataset.slug );
+    {
+        console.log("Indlæser ... " + this.dataset.slug);
 
-    $.get('http://www.dr.dk/mu-online/api/1.3/list/view/season?id='+ this.dataset.slug +'&limit=15&offset=0',
-        function(res, code) {
-            console.debug(code + ': ' + res);
-        }
-    )
+        $.get
+        (
+            'http://www.dr.dk/mu-online/api/1.3/list/view/season?id=' + this.dataset.slug + '&limit=15&offset=0',
+            function (res, code) {
+                console.debug(code + ': ' + res);
+            }
+        )
+    }
 }
 
 
-$(document).ready( // når siden er loaded
-    function(){
-
+$(document).ready
+(
+    // når siden er loaded
+    function()
+    {
         $('#episodes a').one('click', prepareEpisodeDetails);
 
-        var pageContainer = $("div#container").pagecontainer({
-            beforeshow:
-            function( event, ui){
+        var pageContainer = $("div#container").pagecontainer
+        (
+            {
+                beforeshow:
+                function( event, ui)
+                {
                 //hvilken side er vi ved at vise
                 console.log("beforeshow: " + ui.toPage[0].id);
 
-                switch(ui.toPage[0].id) {
-                    case "seasons":
-                        prepareSeasons(event, ui);
-                        break;
+                    switch(ui.toPage[0].id)
+                    {
+                        case "seasons":
+                            prepareSeasons(event, ui);
+                            break;
 
-                    case "landingpage":
-                        break;
+                        case "landingpage":
+                            break;
+                    }
                 }
-        }
-        })
+            }
+        )
     }
 );
