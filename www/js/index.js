@@ -41,11 +41,12 @@ function prepareSeason(event, ui)
         function(res, code){
             console.debug(code + ": " + JSON.stringify(res));
 
+
             // check lige om indholdes er bare lidt i orden...
             if (res.Items && res.TotalSize > 0)
             {
                 // fjern 'gamle' div'er
-                //$('#season div').remove();
+                $('#episodes div').remove();
                 var newContent = '';
                 // gennemløb alle afsnit i Items
                 for (var i in res.Items) {
@@ -57,19 +58,25 @@ function prepareSeason(event, ui)
                     //     <h2>Jonas kysser Eva, men Noora ser det hele</h2>
                     //     </a>
                     //     </div>
-                    newContent += '<div><a href="#episodeDetails">'
-                                + '<img src="xxx">'
+                    newContent += '<div>'
+                                + '<img src="'+ res.Items[i].PrimaryImageUri +'" width="50%">'
                                 + '<h2>'+ res.Items[i].Title +'</h2>'
-                                + '<h2>Jonas kysser Eva, men Noora ser det hele</h2>'
-                                + '</a></div>';
+                                + '<p>'+ res.Items[i].Description +'</p>'
+                                + '<a href="#episodeDetails" data-role="button" data-slug="'+ res.Items[i].Slug +'">se mere</a><hr></div>';
                 }
-
+                $(newContent).appendTo('#episodes')
+                // lad JQM forbedre htmlen
+                $('#episodes').enhanceWithin();
+                // tilføj event handler til hver knap
+                $('#episodes a').one('click', prepareEpisodeDetail);
             }
 
         }
     )
 }
+function prepareEpisodeDetail () {
 
+}
 $(document).ready( // når siden er loaded
     function(){
         var pageContainer = $("div#container").pagecontainer({
