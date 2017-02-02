@@ -1,5 +1,3 @@
-/** Made 31-01-2017 **/
-
 function prepareSeasons(event, ui)
 {
     console.log("ready to load Seasons");
@@ -62,7 +60,7 @@ function prepareSeason(event, ui)
                                 + '<img src="' + res.Items[i].PrimaryImageUri + '" width="50%">'
                                 + '<h2>' + res.Items[i].Title + '</h2>'
                                 + '<p>' + res.Items[i].Description + '</p>'
-                                + '<a href="#episodeDetails" data-role="butten">se mere</a>'
+                                + '<a href="#episodeDetails" data-role="butten" data-slug="'+res.Items[i].Slug+'">se mere</a>'
                                 + '</div>';
 
                 }
@@ -70,7 +68,7 @@ function prepareSeason(event, ui)
                 // lad JQM forbedre htmlen
                 $('#episodes').enhanceWithin();
                 // tilføj event handler til hver knap
-                $('#episodes a').one('click', prepareEpisodeDetails());
+                $('#episodes a').one('click', prepareEpisodeDetails);
             }
         }
     )
@@ -85,9 +83,32 @@ function prepareSeason(event, ui)
 
         $.get
         (
-            'http://www.dr.dk/mu-online/api/1.3/list/view/season?id=' + this.dataset.slug + '&limit=15&offset=0',
-            function (res, code) {
+            'http://www.dr.dk/mu-online/api/1.3/programcard/?id=' + this.dataset.slug,
+            function (res, code)
+            {
                 console.debug(code + ': ' + res);
+                if (res)
+                {
+                    $('#episodeDetails *').remove();
+                    // fjern 'gamle' div'er
+                    var newContent = '';
+                    // gennemløb alle afsnit i Items
+                    newContent += '<div>'
+                            + '<img src="' + res.PrimaryImageUri + '" width="50%">'
+                            + '<h2>' + res.Title + '</h2>'
+                            + '<p>' + res.Description + '</p>'
+                            + '<a href="' + res.PresentationUri + '">se den</a>'
+                            + '<br>'
+                            + '<a href="">imdb</a> '
+                            + '</div>';
+
+
+                    $(newContent).appendTo('#episodeDetails');
+                    // lad JQM forbedre htmlen
+                    $('#episodeDetails').enhanceWithin();
+                    // tilføj event handler til hver knap
+                    $('#episodeDetails a').one('click', prepareEpisodeDetails());
+                }
             }
         )
     }
